@@ -1,0 +1,27 @@
+services:
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: unless-stopped
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: legacy-mssql
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SQL_ADMIN_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    restart: unless-stopped
+
+volumes:
+  qdrant_data:
+  mssql_data:
