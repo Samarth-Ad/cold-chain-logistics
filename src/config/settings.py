@@ -65,7 +65,7 @@ OLLAMA_BASE_URL = os.getenv(
 
 QDRANT_URL = os.getenv(
     "QDRANT_URL",
-    "http://localhost:6333",
+    "http://localhost:8080",
 )
 
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY") or None
