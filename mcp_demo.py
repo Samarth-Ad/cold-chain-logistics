@@ -1,13 +1,14 @@
 import asyncio
 import json
 import os
-import sys
 
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 from langchain_openai import ChatOpenAI
-from mcp import ClientSession, StdioServerParameters
+from mcp import ClientSession
 from mcp.client.stdio import stdio_client
+
+from src.mcp_client import SERVER
 
 
 async def main():
@@ -17,10 +18,6 @@ async def main():
         api_key=os.environ["OPEN_ROUTER_API_KEY"],
         base_url=os.getenv("OPEN_ROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
     )
-    server = StdioServerParameters(
-        command=sys.executable,
-        args=["-m", "src.mcp_server"],
-    )
     messages = [
         SystemMessage(
             content="Use telemetry for readings. Summarize only the returned historical data."
@@ -28,7 +25,7 @@ async def main():
         HumanMessage(content=input("Ask about fleet temperatures: ")),
     ]
 
-    async with stdio_client(server) as (read, write):
+    async with stdio_client(SERVER) as (read, write):
         async with ClientSession(read, write) as session:
             # 1. Discover the MCP tool and describe it to the model.
             await session.initialize()

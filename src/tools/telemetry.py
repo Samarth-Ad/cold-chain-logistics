@@ -6,10 +6,8 @@ from functools import lru_cache
 from pathlib import Path
 
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
-
-from langchain_core.tools import tool
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -47,96 +45,3 @@ def get_db_engine() -> Engine:
         f"mssql+pyodbc:///?odbc_connect={params}",
         pool_pre_ping=True,
     )
-
-
-def validate_sql_query(sql_query: str) -> tuple[bool, str]:
-    """
-    Perform basic read-only query validation.
-
-    The dedicated database user must also have SELECT-only
-    permissions on the semantic view.
-    """
-
-    query = sql_query.strip()
-
-    if not query:
-        return False, "SQL query cannot be empty."
-
-    normalized = query.upper()
-
-    if not normalized.startswith("SELECT"):
-        return False, "Only SELECT queries are authorized."
-
-    # Permit one optional trailing semicolon.
-    if ";" in query.rstrip(";"):
-        return False, "Multiple SQL statements are not permitted."
-
-    # Block common SQL Server mutation and execution constructs.
-    forbidden = [
-        "INSERT ",
-        "UPDATE ",
-        "DELETE ",
-        "DROP ",
-        "ALTER ",
-        "CREATE ",
-        "TRUNCATE ",
-        "EXEC ",
-        "EXECUTE ",
-        "MERGE ",
-        "INTO ",
-        "OPENROWSET",
-        "OPENDATASOURCE",
-    ]
-
-    for keyword in forbidden:
-        if keyword in normalized:
-            return False, (
-                f"Query contains restricted SQL keyword: {keyword.strip()}"
-            )
-
-    return True, query
-
-
-@tool
-def query_telemetry_db(sql_query: str) -> str:
-    """
-    Execute a read-only SQL query against the active fleet view.
-
-    Available columns:
-    Timestamp, Latitude, Longitude, Current_Temperature_C,
-    Cargo_Condition_Code, Risk_Classification,
-    Delay_Probability, Port_Congestion_Level,
-    Route_Risk_Index.
-
-    Always use standard SQL Server T-SQL syntax.
-    Only SELECT queries are supported.
-    """
-
-    is_valid, result = validate_sql_query(sql_query)
-
-    if not is_valid:
-        return f"SECURITY BLOCK: {result}"
-
-    try:
-        engine = get_db_engine()
-
-        with engine.connect() as connection:
-            cursor = connection.execute(text(result))
-
-            columns = list(cursor.keys())
-            rows = cursor.fetchmany(10)
-
-            if not rows:
-                return "No records matched the query criteria."
-
-            formatted_output = (
-                f"COLUMNS: {', '.join(columns)}\n"
-            )
-
-            for row in rows:
-                formatted_output += f"{tuple(row)}\n"
-
-            return formatted_output
-
-    except Exception as exc:
-        return f"Database Error: {exc}"

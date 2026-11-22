@@ -86,7 +86,7 @@ with st.sidebar:
 
     st.markdown("---")
 
-    if st.button("New Conversation", use_container_width=True):
+    if st.button("New Conversation", width="stretch"):
         st.session_state.thread_id = str(uuid.uuid4())
         st.session_state.ui_messages = []
         st.session_state.prompt_initialized = False
@@ -96,7 +96,7 @@ with st.sidebar:
 
     st.caption("Connected Services")
     st.write("🟢 LangGraph Agent")
-    st.write("🟢 MSSQL Telemetry")
+    st.write("🟢 MCP Telemetry")
     st.write("🟢 Qdrant Vector Store")
     st.write("🟢 OpenRouter LLM")
 
