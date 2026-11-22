@@ -1,12 +1,112 @@
-# Python-generated files
+
+# ==========================================
+# Python / FastAPI .gitignore
+# ==========================================
+
+# Python bytecode and cache
 __pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
+*.py[cod]
+*$py.class
+*.pyo
+
+# C extensions
+*.so
 
 # Virtual environments
-.venv
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
 
+# Environment variables and secrets
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Build and distribution
+.Python
+build/
+dist/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+*.egg
+.installed.cfg
+MANIFEST
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+hypothesis/
+
+# Type checking and linting
+.mypy_cache/
+.pyright/
+.ruff_cache/
+.dmypy.json
+.pyre/
+
+# Logs and runtime files
+*.log
+logs/
+*.pid
+*.pid.lock
+
+# Local databases
+*.sqlite3
+*.sqlite3-journal
+*.db
+
+# Local configuration
+local_settings.py
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Documentation builds
+docs/_build/
+site/
+
+# AI coding assistants
+.agents/
+.claude/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+.cache/
+tmp/
+temp/
